@@ -18,6 +18,7 @@ from .config_manager import ConfigManager
 from .config_dialog import ConfigDialog
 from .overlay import CalmBreakOverlay
 from .micro_toast import MicroBreakToast
+from .idle_detector import IdleDetector
 
 from krita import DockWidgetFactoryBase
 
@@ -27,6 +28,7 @@ class RestNoteDockerWidget(QDockWidget):
     STATE_PAUSED = "paused"
     STATE_BREAK = "break"
     STATE_MICRO_BREAK = "micro_break"
+    STATE_IDLE = "idle"
 
     # Font scaling
     TIME_MIN_PT = 14
@@ -52,6 +54,9 @@ class RestNoteDockerWidget(QDockWidget):
 
         self.overlay = None  # CalmBreakOverlay instance
         self.micro_toast = None  # MicroBreakToast instance
+        self.idle_detector = None
+
+        self._apply_idle_config()
 
         # 1-second tick for both timers
         self.tick_timer = QTimer(self)
@@ -176,6 +181,9 @@ class RestNoteDockerWidget(QDockWidget):
 
     # ── Tick: heart of the integration ──
     def _on_tick(self):
+        # 1. Idle detection
+        self._check_idle_transition()
+
         if self.state == self.STATE_RUNNING:
             self.remaining -= 1
 
@@ -205,6 +213,38 @@ class RestNoteDockerWidget(QDockWidget):
         # PAUSED, BREAK: both timers frozen
 
         self._refresh_display()
+
+    # ── Idle handling ──
+    def _apply_idle_config(self):
+        """Create or destroy IdleDetector to match the current config."""
+        if self.config.idle_enabled:
+            if self.idle_detector is None:
+                self.idle_detector = IdleDetector()
+        else:
+            if self.idle_detector is not None:
+                self.idle_detector.destroy()
+                self.idle_detector = None
+            if self.state == self.STATE_IDLE:
+                self.state = self.STATE_RUNNING
+
+    def _check_idle_transition(self):
+        """Auto-transition between RUNNING and IDLE based on user input."""
+        if self.idle_detector is None:
+            return
+
+        idle_sec = self.idle_detector.idle_seconds()
+        threshold = self.config.idle_threshold_seconds
+
+        if self.state == self.STATE_RUNNING:
+            if idle_sec >= threshold:
+                self.state = self.STATE_IDLE
+
+        elif self.state == self.STATE_IDLE:
+            if idle_sec < threshold:
+                self.state = self.STATE_RUNNING
+
+        # PAUSED, BREAK, MICRO_BREAK: idle detection is intentionally
+        # skipped to avoid interfering with explicit user/system states.
 
     # ── Micro break logic ──
     def _maybe_trigger_micro_break(self):
@@ -260,6 +300,8 @@ class RestNoteDockerWidget(QDockWidget):
         self.state = self.STATE_RUNNING
         self.remaining = self.config.work_seconds
         self.micro_remaining = self.config.micro_interval_seconds
+        if self.idle_detector is not None:
+            self.idle_detector.reset()
         self._refresh_display()
 
     # ── Display ──
@@ -282,10 +324,16 @@ class RestNoteDockerWidget(QDockWidget):
         elif self.state == self.STATE_MICRO_BREAK:
             self.status_label.setText("EYE BREAK")
             self.pause_btn.setEnabled(True)
+        elif self.state == self.STATE_IDLE:
+            self.status_label.setText("IDLE")
+            self.pause_btn.setIcon(self._icon_pause)
+            self.pause_btn.setEnabled(True)
 
         # Sub-label: next eye break info
-        if not self.config.micro_enabled:
-            self.sub_label.setText("Eye break: disabled")
+        if self.state == self.STATE_IDLE:
+            self.sub_label.setText("Away — timer paused")
+        elif not self.config.micro_enabled:
+            self.sub_label.setText("Eye breaks: disabled")
         elif self.state == self.STATE_BREAK:
             self.sub_label.setText("—")
         elif self.state == self.STATE_MICRO_BREAK:
@@ -300,6 +348,8 @@ class RestNoteDockerWidget(QDockWidget):
             self.state = self.STATE_PAUSED
         elif self.state == self.STATE_PAUSED:
             self.state = self.STATE_RUNNING
+            if self.idle_detector is not None:
+                self.idle_detector.reset()
         elif self.state == self.STATE_MICRO_BREAK:
             # Pause during micro: cancel toast, freeze timers
             if self.micro_toast is not None:
@@ -319,12 +369,15 @@ class RestNoteDockerWidget(QDockWidget):
         self.state = self.STATE_RUNNING
         self.remaining = self.config.work_seconds
         self.micro_remaining = self.config.micro_interval_seconds
+        if self.idle_detector is not None:
+            self.idle_detector.reset()
         self._refresh_display()
 
     def _on_config_clicked(self):
         dialog = ConfigDialog(self.config, parent=self.widget())
         if dialog.exec_():
             dialog.apply_to_config()
+            self._apply_idle_config()
             # 進行中の作業はなるべく邪魔しない方針
             if self.state == self.STATE_RUNNING:
                 if self.remaining > self.config.work_seconds:

@@ -8,8 +8,9 @@ Rest Note combines two complementary timers: a configurable work cycle that trig
 
 ## Features
 
-- **Scheduled work breaks** — A configurable cycle (default: 50 minutes work / 10 minutes break) that takes over your screen with a slow-fading overlay. The "Resume work" button only becomes clickable after the full break duration has elapsed.
+- **Scheduled work breaks** — A configurable cycle (default: 50 minutes work / 10 minutes break) that takes over your screen with a slow-fading overlay. The "Resume work" button only becomes clickable after the full break duration has elapsed. A "Skip" button allows immediate dismissal.
 - **20-20-20 eye break reminders** — Optional periodic micro-breaks following the well-known [20-20-20 rule](https://www.aao.org/eye-health/tips-prevention/computer-usage): every 20 minutes, look ~6 meters away for 20 seconds. A small toast appears in the corner of the screen without blocking input.
+- **Idle detection** — Automatically pauses the work timer when no keyboard, mouse, or tablet input is detected inside Krita for a configurable duration. Resumes seamlessly when input returns.
 - **Responsive docker UI** — Time and status labels scale dynamically with the docker widget size.
 - **Pause / Reset / Config controls** — Standard timer controls directly in the docker.
 - **Persistent settings** — Configuration is stored in `config/main.json` inside the plugin directory.
@@ -53,6 +54,7 @@ Once enabled, the timer starts automatically when Krita launches. The docker sho
 | `PAUSED` | Both timers are frozen. |
 | `ON BREAK` | Fullscreen break overlay is active. |
 | `EYE BREAK` | A 20-second eye break toast is currently shown. |
+| `IDLE` | No input detected — work timer is paused until activity resumes. |
 
 ---
 
@@ -60,4 +62,45 @@ Once enabled, the timer starts automatically when Krita launches. The docker sho
 
 ![alt text](images/config.png)
 
-Click the **Config** button to open the settings dialog. All settings are saved immediately to `config/main.json`.
+Click the **Config** button to open the settings dialog. All settings are saved to `config/main.json` when you click **OK**.
+
+### Work / Break cycle
+
+| Setting | Description |
+|---|---|
+| **Work duration** | How long the work timer runs before triggering a full break (default: 50 min). |
+| **Break duration** | How long the break overlay stays active before the "Resume work" button becomes clickable (default: 10 min). |
+
+### Eye break reminder (20-20-20)
+
+| Setting | Description |
+|---|---|
+| **Enable eye break reminders** | Turns the 20-20-20 toast on or off. |
+| **Interval** | How often the eye break reminder appears (default: 20 min). |
+| **Duration** | How long the eye break toast stays visible (default: 20 sec). |
+| **Skip if big break within** | Suppresses the eye break toast if the next full break is sooner than this threshold, to avoid back-to-back interruptions (default: 180 sec). |
+
+### Idle detection
+
+| Setting | Description |
+|---|---|
+| **Enable idle detection** | When enabled, the work timer pauses automatically if no input is detected inside Krita. Resumes when activity returns. |
+| **Idle threshold** | Seconds of inactivity required before the timer is paused (default: 45 sec). |
+
+### Overlay appearance
+
+| Setting | Description |
+|---|---|
+| **Title font size** | Font size of the "Time for a break" heading in the break overlay (default: 50 px). |
+| **Message font size** | Font size of the break duration message below the heading (default: 32 px). |
+| **Skip font size** | Font size of the "Skip" button that dismisses the overlay immediately (default: 18 px). |
+
+### Toast appearance
+
+| Setting | Description |
+|---|---|
+| **Margin** | Distance from the screen edge where the toast is positioned (default: 128 px). |
+| **Width** | Width of the eye break toast window (default: 480 px). |
+| **Height** | Height of the eye break toast window (default: 220 px). |
+| **Title font size** | Font size of the "Eye break" heading inside the toast (default: 28 px). |
+| **Message font size** | Font size of the instruction text inside the toast (default: 24 px). |

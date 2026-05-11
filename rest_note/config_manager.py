@@ -8,6 +8,8 @@ DEFAULT_CONFIG = {
     "micro_break_interval_minutes": 20,
     "micro_break_duration_seconds": 20,
     "micro_skip_threshold_seconds": 180,  # 大休憩が3分以内ならスキップ
+    "idle_enabled": True,
+    "idle_threshold_seconds": 45,
     "micro_toast_margin": 128,
     "micro_toast_width": 480,
     "micro_toast_height": 220,
@@ -106,6 +108,23 @@ class ConfigManager:
     @micro_skip_threshold.setter
     def micro_skip_threshold(self, value):
         self._data["micro_skip_threshold_seconds"] = int(value)
+
+    # ── Idle detection ──
+    @property
+    def idle_enabled(self):
+        return bool(self._data.get("idle_enabled", True))
+
+    @idle_enabled.setter
+    def idle_enabled(self, value):
+        self._data["idle_enabled"] = bool(value)
+
+    @property
+    def idle_threshold_seconds(self):
+        return int(self._data.get("idle_threshold_seconds", 30))
+
+    @idle_threshold_seconds.setter
+    def idle_threshold_seconds(self, value):
+        self._data["idle_threshold_seconds"] = int(value)
 
     # ── Toast appearance ──
     @property

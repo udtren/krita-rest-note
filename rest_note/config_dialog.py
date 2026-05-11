@@ -73,6 +73,30 @@ class ConfigDialog(QDialog):
 
         self._update_micro_enabled(self.micro_enable.isChecked())
 
+        # ── Idle detection group ──
+        idle_group = QGroupBox("Idle detection")
+        idle_layout = QVBoxLayout(idle_group)
+
+        self.idle_enable = QCheckBox("Enable idle detection")
+        self.idle_enable.setChecked(self.config.idle_enabled)
+        self.idle_enable.setToolTip(
+            "Pause the work timer automatically when no input is detected."
+        )
+        self.idle_enable.toggled.connect(self._update_idle_enabled)
+        idle_layout.addWidget(self.idle_enable)
+
+        idle_form = QFormLayout()
+        self.idle_threshold_spin = QSpinBox()
+        self.idle_threshold_spin.setRange(5, 3600)
+        self.idle_threshold_spin.setSuffix(" sec")
+        self.idle_threshold_spin.setValue(self.config.idle_threshold_seconds)
+        idle_form.addRow("Idle threshold:", self.idle_threshold_spin)
+        idle_layout.addLayout(idle_form)
+
+        outer.addWidget(idle_group)
+
+        self._update_idle_enabled(self.idle_enable.isChecked())
+
         # ── Overlay appearance group ──
         overlay_group = QGroupBox("Overlay appearance")
         overlay_form = QFormLayout(overlay_group)
@@ -144,6 +168,9 @@ class ConfigDialog(QDialog):
         self.micro_duration_spin.setEnabled(enabled)
         self.micro_skip_spin.setEnabled(enabled)
 
+    def _update_idle_enabled(self, enabled):
+        self.idle_threshold_spin.setEnabled(enabled)
+
     def apply_to_config(self):
         self.config.work_minutes = self.work_spin.value()
         self.config.break_minutes = self.break_spin.value()
@@ -151,6 +178,8 @@ class ConfigDialog(QDialog):
         self.config.micro_interval_minutes = self.micro_interval_spin.value()
         self.config.micro_duration_seconds = self.micro_duration_spin.value()
         self.config.micro_skip_threshold = self.micro_skip_spin.value()
+        self.config.idle_enabled = self.idle_enable.isChecked()
+        self.config.idle_threshold_seconds = self.idle_threshold_spin.value()
         self.config.micro_toast_margin = self.toast_margin_spin.value()
         self.config.micro_toast_width = self.toast_width_spin.value()
         self.config.micro_toast_height = self.toast_height_spin.value()
