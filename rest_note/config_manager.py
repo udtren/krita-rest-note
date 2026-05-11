@@ -2,6 +2,7 @@ import json
 import os
 
 DEFAULT_CONFIG = {
+    "work_break_enabled": True,  
     "work_minutes": 50,
     "break_minutes": 10,
     "micro_break_enabled": True,
