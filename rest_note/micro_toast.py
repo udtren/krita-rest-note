@@ -14,15 +14,15 @@ class MicroBreakToast(QWidget):
     - Shows simple text + thin progress bar that drains
     """
     finished = pyqtSignal()
-    
-    MARGIN = 24   # margin from screen edge
-    WIDTH = 320
-    HEIGHT = 110
-    
-    def __init__(self, duration_seconds=20):
+
+    def __init__(self, duration_seconds=20, margin=24, width=320, height=110,
+                 title_font_size=13, message_font_size=15):
         super().__init__()
         self.duration = duration_seconds
         self.elapsed = 0.0
+        self.MARGIN = margin
+        self.WIDTH = width
+        self.HEIGHT = height
         
         # Non-blocking, always-on-top, frameless
         self.setWindowFlags(
@@ -48,13 +48,13 @@ class MicroBreakToast(QWidget):
         
         self.title_label = QLabel("Eye break")
         self.title_label.setStyleSheet(
-            "color: rgba(230,220,205,220); font-size: 13px; letter-spacing: 3px;"
+            f"color: rgba(230,220,205,220); font-size: {title_font_size}px; letter-spacing: 3px;"
         )
         layout.addWidget(self.title_label)
-        
+
         self.message_label = QLabel("Look ~6m away for 20 seconds.")
         self.message_label.setStyleSheet(
-            "color: rgba(245,235,220,200); font-size: 15px;"
+            f"color: rgba(245,235,220,200); font-size: {message_font_size}px;"
         )
         layout.addWidget(self.message_label)
         
