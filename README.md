@@ -19,13 +19,16 @@ Rest Note combines two complementary timers: a configurable work cycle that trig
 ## Screenshots
 
 ![alt text](images/docker.png)
+
 **Docker panel** — Compact display showing the current state, time until the next break, and controls.
 
 ![alt text](images/break.png)
+
 **Break overlay** — A fullscreen overlay that fades in over 30 seconds, with a calming color palette and a progress button that becomes clickable only after the full break duration.
 However, you can resume it immediately by click the skip button.
 
 ![alt text](images/toast.png)
+
 **Eye break toast** — A small unobtrusive notification in the corner of the screen, with a thin progress bar that drains as the 20 seconds pass.
 
 ---
