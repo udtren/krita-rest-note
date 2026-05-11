@@ -1,9 +1,19 @@
 import os
 
 from .compat import (
-    Qt, QSize, QTimer,
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QDockWidget,
-    QFont, QFontMetrics, QIcon,
+    Qt,
+    QSize,
+    QTimer,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QFrame,
+    QDockWidget,
+    QFont,
+    QFontMetrics,
+    QIcon,
 )
 
 _ICONS_DIR = os.path.join(os.path.dirname(__file__), "icons")
@@ -390,7 +400,10 @@ class RestNoteDockerFactory(DockWidgetFactoryBase):
 
     def __init__(self):
 
-        _dock_pos = DockWidgetFactoryBase.DockRight
+        try:
+            _dock_pos = DockWidgetFactoryBase.DockRight
+        except AttributeError:
+            _dock_pos = DockWidgetFactoryBase.DockPosition.DockRight  # Krita 6
 
         super().__init__("RestNoteDocker", _dock_pos)
 
