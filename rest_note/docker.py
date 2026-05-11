@@ -382,7 +382,7 @@ class RestNoteDockerWidget(QDockWidget):
 
     def _on_config_clicked(self):
         dialog = ConfigDialog(self.config, parent=self.widget())
-        if dialog.exec_():
+        if dialog.exec():
             dialog.apply_to_config()
             self._apply_idle_config()
             # 進行中の作業はなるべく邪魔しない方針
