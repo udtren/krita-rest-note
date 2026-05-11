@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=rest_note
+X-Python-2-Compatible=false
+X-Krita-Manual=
+Name=Rest Note
+Comment=Enforces work-break cycles to protect your eyes
