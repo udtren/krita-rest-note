@@ -86,3 +86,6 @@ except ImportError:
 
     # QPainter
     QPainter.Antialiasing = QPainter.RenderHint.Antialiasing
+
+    # QPropertyAnimation / QAbstractAnimation state
+    QPropertyAnimation.Running = QPropertyAnimation.State.Running
