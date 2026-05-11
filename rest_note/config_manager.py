@@ -2,7 +2,6 @@ import json
 import os
 
 DEFAULT_CONFIG = {
-    "work_break_enabled": True,  
     "work_minutes": 50,
     "break_minutes": 10,
     "micro_break_enabled": True,
@@ -39,17 +38,6 @@ class ConfigManager:
             json.dump(self._data, f, indent=2)
     
     # ── Big break (50/10) ──
-    @property
-    def work_break_enabled(self):
-        return bool(self._data.get("work_break_enabled", True))
-    
-    @work_break_enabled.setter
-    def work_break_enabled(self, value):
-        self._data["work_break_enabled"] = bool(value)
-    
-    @property
-    def work_minutes(self):
-        return int(self._data.get("work_minutes", 50))
     @property
     def work_minutes(self):
         return int(self._data.get("work_minutes", 50))
