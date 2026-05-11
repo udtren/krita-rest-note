@@ -1,13 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel, QPushButton
-from PyQt5.QtCore import (
-    Qt,
-    QTimer,
-    pyqtSignal,
-    QPropertyAnimation,
-    pyqtProperty,
-    QEasingCurve,
+from .compat import (
+    Qt, QTimer, pyqtSignal, QPropertyAnimation, pyqtProperty, QEasingCurve,
+    QWidget, QApplication, QVBoxLayout, QLabel, QPushButton,
+    QPainter, QColor,
 )
-from PyQt5.QtGui import QPainter, QColor
 
 from .progress_button import CalmProgressButton
 

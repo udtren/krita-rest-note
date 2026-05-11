@@ -1,16 +1,10 @@
 import os
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QFrame,
-    QDockWidget,
+from .compat import (
+    Qt, QSize, QTimer,
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QDockWidget,
+    QFont, QFontMetrics, QIcon,
 )
-from PyQt5.QtCore import Qt, QSize, QTimer
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon
 
 _ICONS_DIR = os.path.join(os.path.dirname(__file__), "icons")
 
