@@ -6,8 +6,7 @@ Note: This only detects inactivity inside Krita's windows.
 Activity in other applications (browser, etc.) is counted as idle.
 """
 
-from PyQt5.QtCore import QObject, QEvent, QTime
-from PyQt5.QtWidgets import QApplication
+from .compat import QObject, QEvent, QTime, QApplication
 
 
 class IdleDetector(QObject):

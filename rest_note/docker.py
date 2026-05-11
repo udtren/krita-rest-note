@@ -1,6 +1,9 @@
 import os
 
-from PyQt5.QtWidgets import (
+from .compat import (
+    Qt,
+    QSize,
+    QTimer,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -8,9 +11,10 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QFrame,
     QDockWidget,
+    QFont,
+    QFontMetrics,
+    QIcon,
 )
-from PyQt5.QtCore import Qt, QSize, QTimer
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon
 
 _ICONS_DIR = os.path.join(os.path.dirname(__file__), "icons")
 
@@ -39,6 +43,11 @@ class RestNoteDockerWidget(QDockWidget):
     SUB_MAX_PT = 18
     STATUS_RATIO = 0.28
     SUB_RATIO = 0.22
+
+    # Button scaling
+    BTN_MIN_PX = 16
+    BTN_MAX_PX = 64
+    BTN_RATIO = 0.5
 
     def __init__(self):
         super().__init__()
@@ -104,30 +113,22 @@ class RestNoteDockerWidget(QDockWidget):
         self._icon_refresh = QIcon(os.path.join(_ICONS_DIR, "refresh.png"))
         self._icon_setting = QIcon(os.path.join(_ICONS_DIR, "setting.png"))
 
-        btn_size = QSize(32, 32)
-        icon_size = QSize(32, 32)
         _btn_style = "background-color: rgb(70, 70, 70);"
 
         self.pause_btn = QPushButton()
         self.pause_btn.setIcon(self._icon_pause)
-        self.pause_btn.setIconSize(icon_size)
-        self.pause_btn.setFixedSize(btn_size)
         self.pause_btn.setStyleSheet(_btn_style)
         self.pause_btn.setToolTip("Pause / Resume")
         self.pause_btn.clicked.connect(self._on_pause_clicked)
 
         self.reset_btn = QPushButton()
         self.reset_btn.setIcon(self._icon_refresh)
-        self.reset_btn.setIconSize(icon_size)
-        self.reset_btn.setFixedSize(btn_size)
         self.reset_btn.setStyleSheet(_btn_style)
         self.reset_btn.setToolTip("Reset")
         self.reset_btn.clicked.connect(self._on_reset_clicked)
 
         self.config_btn = QPushButton()
         self.config_btn.setIcon(self._icon_setting)
-        self.config_btn.setIconSize(icon_size)
-        self.config_btn.setFixedSize(btn_size)
         self.config_btn.setStyleSheet(_btn_style)
         self.config_btn.setToolTip("Config…")
         self.config_btn.clicked.connect(self._on_config_clicked)
@@ -177,6 +178,13 @@ class RestNoteDockerWidget(QDockWidget):
         sub_font.setPointSize(sub_pt)
         self.sub_label.setFont(sub_font)
         self.sub_label.setMinimumHeight(QFontMetrics(sub_font).height() + 2)
+
+        btn_px = int(time_pt * self.BTN_RATIO)
+        btn_px = max(self.BTN_MIN_PX, min(self.BTN_MAX_PX, btn_px))
+        btn_sz = QSize(btn_px, btn_px)
+        for btn in (self.pause_btn, self.reset_btn, self.config_btn):
+            btn.setFixedSize(btn_sz)
+            btn.setIconSize(btn_sz)
 
     # ── Tick: heart of the integration ──
     def _on_tick(self):
@@ -396,7 +404,10 @@ class RestNoteDockerFactory(DockWidgetFactoryBase):
 
     def __init__(self):
 
-        _dock_pos = DockWidgetFactoryBase.DockRight
+        try:
+            _dock_pos = DockWidgetFactoryBase.DockRight
+        except AttributeError:
+            _dock_pos = DockWidgetFactoryBase.DockPosition.DockRight  # Krita 6
 
         super().__init__("RestNoteDocker", _dock_pos)
 

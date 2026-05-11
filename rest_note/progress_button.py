@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore import Qt, QTimer, QRectF, pyqtSignal
-from PyQt5.QtGui import QPainter, QColor, QFont, QPen, QPainterPath
+from .compat import (
+    Qt, QTimer, QRectF, pyqtSignal,
+    QPushButton,
+    QPainter, QColor, QFont, QPen, QPainterPath,
+)
 
 
 class CalmProgressButton(QPushButton):

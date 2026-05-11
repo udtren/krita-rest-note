@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel
-from PyQt5.QtCore import (
+from .compat import (
     Qt, QTimer, pyqtSignal, QPropertyAnimation, pyqtProperty, QEasingCurve,
-    QPoint, QRectF
+    QPoint, QRectF,
+    QWidget, QApplication, QVBoxLayout, QLabel,
+    QPainter, QColor, QFont, QPainterPath,
 )
-from PyQt5.QtGui import QPainter, QColor, QFont, QPainterPath
 
 
 class MicroBreakToast(QWidget):

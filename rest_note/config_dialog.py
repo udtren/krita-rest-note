@@ -1,11 +1,6 @@
-from PyQt5.QtWidgets import (
-    QDialog,
-    QFormLayout,
-    QSpinBox,
-    QDialogButtonBox,
-    QVBoxLayout,
-    QCheckBox,
-    QGroupBox,
+from .compat import (
+    QDialog, QFormLayout, QSpinBox, QDialogButtonBox,
+    QVBoxLayout, QCheckBox, QGroupBox,
 )
 
 
