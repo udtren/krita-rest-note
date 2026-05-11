@@ -4,6 +4,10 @@ import os
 DEFAULT_CONFIG = {
     "work_minutes": 50,
     "break_minutes": 10,
+    "micro_break_enabled": True,
+    "micro_break_interval_minutes": 20,
+    "micro_break_duration_seconds": 20,
+    "micro_skip_threshold_seconds": 180,  # 大休憩が3分以内ならスキップ
 }
 
 
@@ -23,7 +27,6 @@ class ConfigManager:
         try:
             with open(self.config_path, "r", encoding="utf-8") as f:
                 loaded = json.load(f)
-            # Merge with defaults to handle missing keys
             self._data = dict(DEFAULT_CONFIG)
             self._data.update(loaded)
         except (json.JSONDecodeError, OSError):
@@ -34,6 +37,7 @@ class ConfigManager:
         with open(self.config_path, "w", encoding="utf-8") as f:
             json.dump(self._data, f, indent=2)
     
+    # ── Big break (50/10) ──
     @property
     def work_minutes(self):
         return int(self._data.get("work_minutes", 50))
@@ -57,3 +61,40 @@ class ConfigManager:
     @property
     def break_seconds(self):
         return self.break_minutes * 60
+    
+    # ── 20-20-20 micro break ──
+    @property
+    def micro_enabled(self):
+        return bool(self._data.get("micro_break_enabled", True))
+    
+    @micro_enabled.setter
+    def micro_enabled(self, value):
+        self._data["micro_break_enabled"] = bool(value)
+    
+    @property
+    def micro_interval_minutes(self):
+        return int(self._data.get("micro_break_interval_minutes", 20))
+    
+    @micro_interval_minutes.setter
+    def micro_interval_minutes(self, value):
+        self._data["micro_break_interval_minutes"] = int(value)
+    
+    @property
+    def micro_interval_seconds(self):
+        return self.micro_interval_minutes * 60
+    
+    @property
+    def micro_duration_seconds(self):
+        return int(self._data.get("micro_break_duration_seconds", 20))
+    
+    @micro_duration_seconds.setter
+    def micro_duration_seconds(self, value):
+        self._data["micro_break_duration_seconds"] = int(value)
+    
+    @property
+    def micro_skip_threshold(self):
+        return int(self._data.get("micro_skip_threshold_seconds", 180))
+    
+    @micro_skip_threshold.setter
+    def micro_skip_threshold(self, value):
+        self._data["micro_skip_threshold_seconds"] = int(value)
