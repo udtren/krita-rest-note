@@ -140,7 +140,6 @@ class RestNoteDockerWidget(QDockWidget):
         btn_row.addStretch()
         layout.addLayout(btn_row)
 
-        layout.addStretch(1)
         self.setWidget(root)
 
         self._update_font_sizes(root.width(), root.height())
