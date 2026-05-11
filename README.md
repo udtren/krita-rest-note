@@ -2,35 +2,35 @@
 
 A Krita plugin that enforces healthy work-break cycles to protect your eyes and reduce fatigue during long drawing sessions.
 
-Rest Note combines two complementary timers: a configurable work cycle that triggers a fullscreen break, and an optional **eye break reminder** that surfaces a soft toast in the corner of your screen. 
+Rest Note combines two complementary timers: a configurable work cycle that triggers a fullscreen break, and an optional eye break reminder that surfaces a soft toast in the corner of your screen. 
 
 ---
 
 ## Features
 
 - **Scheduled work breaks** — A configurable cycle (default: 50 minutes work / 10 minutes break) that takes over your screen with a slow-fading overlay. The "Resume work" button only becomes clickable after the full break duration has elapsed. A "Skip" button allows immediate dismissal.
-- **20-20-20 eye break reminders** — Optional periodic micro-breaks following the well-known [20-20-20 rule](https://www.aao.org/eye-health/tips-prevention/computer-usage): every 20 minutes, look ~6 meters away for 20 seconds. A small toast appears in the corner of the screen without blocking input.
+- **20-20-20 eye break reminders** — Optional periodic micro-breaks following the 20-20-20 rule. A small toast appears in the corner of the screen without blocking input.
 - **Idle detection** — Automatically pauses the work timer when no keyboard, mouse, or tablet input is detected inside Krita for a configurable duration. Resumes seamlessly when input returns.
 - **Responsive docker UI** — Time and status labels scale dynamically with the docker widget size.
 - **Pause / Reset / Config controls** — Standard timer controls directly in the docker.
-- **Persistent settings** — Configuration is stored in `config/main.json` inside the plugin directory.
 
 ---
 
 ## Screenshots
 
+**Docker panel** — Compact display showing the current state, time until the next break, and controls.
+
 ![alt text](images/docker.png)
 
-**Docker panel** — Compact display showing the current state, time until the next break, and controls.
+
+**Break overlay** — A fullscreen overlay that fades in over 30 seconds, with a calming color palette and a progress button that becomes clickable only after the full break duration.
 
 ![alt text](images/break.png)
 
-**Break overlay** — A fullscreen overlay that fades in over 30 seconds, with a calming color palette and a progress button that becomes clickable only after the full break duration.
-However, you can resume it immediately by click the skip button.
-
-![alt text](images/toast.png)
 
 **Eye break toast** — A small unobtrusive notification in the corner of the screen, with a thin progress bar that drains as the 20 seconds pass.
+
+![alt text](images/toast.png)
 
 ---
 
@@ -62,7 +62,7 @@ Once enabled, the timer starts automatically when Krita launches. The docker sho
 
 ![alt text](images/config.png)
 
-Click the **Config** button to open the settings dialog. All settings are saved to `config/main.json` when you click **OK**.
+Click the **Config** button to open the settings dialog. All settings are saved to `<krita resource folder>/rest_note/config/main.json` when you click **OK**.
 
 ### Work / Break cycle
 

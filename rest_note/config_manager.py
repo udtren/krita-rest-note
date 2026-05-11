@@ -23,8 +23,9 @@ DEFAULT_CONFIG = {
 
 class ConfigManager:
     def __init__(self):
-        plugin_dir = os.path.dirname(os.path.abspath(__file__))
-        self.config_dir = os.path.join(plugin_dir, "config")
+        _plugin_dir = os.path.dirname(os.path.abspath(__file__))
+        _krita_data_dir = os.path.dirname(os.path.dirname(_plugin_dir))
+        self.config_dir = os.path.join(_krita_data_dir, "rest_note", "config")
         self.config_path = os.path.join(self.config_dir, "main.json")
         self._data = {}
         self.load()
