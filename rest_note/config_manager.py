@@ -40,6 +40,17 @@ class ConfigManager:
     
     # ── Big break (50/10) ──
     @property
+    def work_break_enabled(self):
+        return bool(self._data.get("work_break_enabled", True))
+    
+    @work_break_enabled.setter
+    def work_break_enabled(self, value):
+        self._data["work_break_enabled"] = bool(value)
+    
+    @property
+    def work_minutes(self):
+        return int(self._data.get("work_minutes", 50))
+    @property
     def work_minutes(self):
         return int(self._data.get("work_minutes", 50))
     
