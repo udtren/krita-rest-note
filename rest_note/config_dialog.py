@@ -15,14 +15,7 @@ class ConfigDialog(QDialog):
         
         # ── Big break group ──
         big_group = QGroupBox("Work / Break cycle")
-        big_layout = QVBoxLayout(big_group)
-        
-        self.work_enable = QCheckBox("Enable scheduled work breaks")
-        self.work_enable.setChecked(self.config.work_break_enabled)
-        self.work_enable.toggled.connect(self._update_work_enabled)
-        big_layout.addWidget(self.work_enable)
-        
-        big_form = QFormLayout()
+        big_form = QFormLayout(big_group)
         
         self.work_spin = QSpinBox()
         self.work_spin.setRange(1, 180)
@@ -36,7 +29,6 @@ class ConfigDialog(QDialog):
         self.break_spin.setValue(self.config.break_minutes)
         big_form.addRow("Break duration:", self.break_spin)
         
-        big_layout.addLayout(big_form)
         outer.addWidget(big_group)
         
         # ── Micro break group (20-20-20) ──
@@ -67,26 +59,13 @@ class ConfigDialog(QDialog):
         self.micro_skip_spin.setSuffix(" sec")
         self.micro_skip_spin.setValue(self.config.micro_skip_threshold)
         self.micro_skip_spin.setToolTip(
-            "Skip eye break if the next work break is closer than this. "
-            "Has no effect when work breaks are disabled."
+            "Skip eye break if the next big break is closer than this."
         )
-        micro_form.addRow("Skip if work break within:", self.micro_skip_spin)
+        micro_form.addRow("Skip if big break within:", self.micro_skip_spin)
         
         micro_layout.addLayout(micro_form)
         outer.addWidget(micro_group)
         
-        # ── Warning label (both disabled) ──
-        self.warning_label = QLabel(
-            "⚠ No breaks are scheduled. The plugin will stay idle."
-        )
-        self.warning_label.setStyleSheet(
-            "color: #c8a060; font-size: 11px; padding: 4px;"
-        )
-        self.warning_label.setWordWrap(True)
-        outer.addWidget(self.warning_label)
-        
-        # ── Initial enabled states ──
-        self._update_work_enabled(self.work_enable.isChecked())
         self._update_micro_enabled(self.micro_enable.isChecked())
         
         # ── OK / Cancel ──
@@ -97,26 +76,12 @@ class ConfigDialog(QDialog):
         buttons.rejected.connect(self.reject)
         outer.addWidget(buttons)
     
-    def _update_work_enabled(self, enabled):
-        self.work_spin.setEnabled(enabled)
-        self.break_spin.setEnabled(enabled)
-        self._update_warning()
-    
     def _update_micro_enabled(self, enabled):
         self.micro_interval_spin.setEnabled(enabled)
         self.micro_duration_spin.setEnabled(enabled)
         self.micro_skip_spin.setEnabled(enabled)
-        self._update_warning()
-    
-    def _update_warning(self):
-        both_off = (
-            not self.work_enable.isChecked() 
-            and not self.micro_enable.isChecked()
-        )
-        self.warning_label.setVisible(both_off)
     
     def apply_to_config(self):
-        self.config.work_break_enabled = self.work_enable.isChecked()
         self.config.work_minutes = self.work_spin.value()
         self.config.break_minutes = self.break_spin.value()
         self.config.micro_enabled = self.micro_enable.isChecked()
