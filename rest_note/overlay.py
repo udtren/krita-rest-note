@@ -78,6 +78,7 @@ class CalmBreakOverlay(QWidget):
 
     def paintEvent(self, event):
         p = QPainter(self)
+        p.setCompositionMode(QPainter.CompositionMode_Source)
         p.fillRect(self.rect(), QColor(15, 17, 22, self._bg_alpha))
 
     def _on_resume(self):
