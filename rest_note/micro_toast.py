@@ -35,8 +35,10 @@ class MicroBreakToast(QWidget):
         height=110,
         title_font_size=13,
         message_font_size=15,
+        screen=None,
     ):
         super().__init__()
+        self._screen = screen
         self.duration = duration_seconds
         self.elapsed = 0.0
         self.MARGIN = margin
@@ -54,10 +56,11 @@ class MicroBreakToast(QWidget):
         self.setAttribute(Qt.WA_ShowWithoutActivating)  # フォーカスを奪わない
         self.resize(self.WIDTH, self.HEIGHT)
 
-        # Position: bottom-right of primary screen
-        screen = QApplication.primaryScreen().availableGeometry()
-        x = screen.right() - self.WIDTH - self.MARGIN
-        y = screen.bottom() - self.HEIGHT - self.MARGIN
+        # Position: bottom-right of the target screen (Krita's current screen)
+        target_screen = self._screen if self._screen is not None else QApplication.primaryScreen()
+        geom = target_screen.availableGeometry()
+        x = geom.right() - self.WIDTH - self.MARGIN
+        y = geom.bottom() - self.HEIGHT - self.MARGIN
         self.move(QPoint(x, y))
 
         # Layout
