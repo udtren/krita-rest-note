@@ -399,6 +399,20 @@ class RestNoteDockerWidget(QDockWidget):
     def canvasChanged(self, canvas):
         pass
 
+    def closeEvent(self, event):
+        if self.tick_timer is not None:
+            self.tick_timer.stop()
+        if self.idle_detector is not None:
+            self.idle_detector.destroy()
+            self.idle_detector = None
+        if self.overlay is not None:
+            self.overlay.close()
+            self.overlay = None
+        if self.micro_toast is not None:
+            self.micro_toast.cancel()
+            self.micro_toast = None
+        super().closeEvent(event)
+
 
 class RestNoteDockerFactory(DockWidgetFactoryBase):
 
