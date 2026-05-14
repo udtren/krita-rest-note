@@ -5,6 +5,7 @@ from .compat import (
     QSize,
     QTimer,
     QWidget,
+    QApplication,
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
@@ -253,6 +254,18 @@ class RestNoteDockerWidget(QDockWidget):
         # PAUSED, BREAK, MICRO_BREAK: idle detection is intentionally
         # skipped to avoid interfering with explicit user/system states.
 
+    def _current_screen(self):
+        """Resolve the screen the Krita main window is currently on."""
+        win = self.window()
+        if win is not None:
+            handle = win.windowHandle()
+            if handle is not None and handle.screen() is not None:
+                return handle.screen()
+            screen = win.screen()
+            if screen is not None:
+                return screen
+        return QApplication.primaryScreen()
+
     # ── Micro break logic ──
     def _maybe_trigger_micro_break(self):
         """20分タイマーが0になった時に呼ばれる。大休憩が近ければスキップ。"""
@@ -269,6 +282,7 @@ class RestNoteDockerWidget(QDockWidget):
             height=self.config.micro_toast_height,
             title_font_size=self.config.micro_toast_title_font_size,
             message_font_size=self.config.micro_toast_message_font_size,
+            screen=self._current_screen(),
         )
         self.micro_toast.finished.connect(self._end_micro_break)
         self.micro_toast.show()
@@ -298,6 +312,7 @@ class RestNoteDockerWidget(QDockWidget):
             title_font_size=self.config.overlay_title_font_size,
             message_font_size=self.config.overlay_message_font_size,
             skip_font_size=self.config.overlay_skip_font_size,
+            screen=self._current_screen(),
         )
         self.overlay.breakFinished.connect(self._end_big_break)
         self.overlay.show()
