@@ -113,6 +113,7 @@ class RestNoteDockerWidget(QDockWidget):
         self._icon_resume = QIcon(os.path.join(_ICONS_DIR, "play.png"))
         self._icon_refresh = QIcon(os.path.join(_ICONS_DIR, "refresh.png"))
         self._icon_setting = QIcon(os.path.join(_ICONS_DIR, "setting.png"))
+        self._icon_rest = QIcon(os.path.join(_ICONS_DIR, "rest.png"))
 
         _btn_style = "background-color: rgb(70, 70, 70);"
 
@@ -128,6 +129,12 @@ class RestNoteDockerWidget(QDockWidget):
         self.reset_btn.setToolTip("Reset")
         self.reset_btn.clicked.connect(self._on_reset_clicked)
 
+        self.rest_btn = QPushButton()
+        self.rest_btn.setIcon(self._icon_rest)
+        self.rest_btn.setStyleSheet(_btn_style)
+        self.rest_btn.setToolTip("Take a break now")
+        self.rest_btn.clicked.connect(self._on_rest_clicked)
+
         self.config_btn = QPushButton()
         self.config_btn.setIcon(self._icon_setting)
         self.config_btn.setStyleSheet(_btn_style)
@@ -138,6 +145,7 @@ class RestNoteDockerWidget(QDockWidget):
         btn_row.addStretch()
         btn_row.addWidget(self.pause_btn)
         btn_row.addWidget(self.reset_btn)
+        btn_row.addWidget(self.rest_btn)
         btn_row.addWidget(self.config_btn)
         btn_row.addStretch()
         layout.addLayout(btn_row)
@@ -183,7 +191,7 @@ class RestNoteDockerWidget(QDockWidget):
         btn_px = int(time_pt * self.BTN_RATIO)
         btn_px = max(self.BTN_MIN_PX, min(self.BTN_MAX_PX, btn_px))
         btn_sz = QSize(btn_px, btn_px)
-        for btn in (self.pause_btn, self.reset_btn, self.config_btn):
+        for btn in (self.pause_btn, self.reset_btn, self.rest_btn, self.config_btn):
             btn.setFixedSize(btn_sz)
             btn.setIconSize(btn_sz)
 
@@ -394,6 +402,11 @@ class RestNoteDockerWidget(QDockWidget):
         if self.idle_detector is not None:
             self.idle_detector.reset()
         self._refresh_display()
+
+    def _on_rest_clicked(self):
+        if self.state != self.STATE_BREAK:
+            self._start_big_break()
+            self._refresh_display()
 
     def _on_config_clicked(self):
         dialog = ConfigDialog(self.config, parent=self.widget())

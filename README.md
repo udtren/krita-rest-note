@@ -44,6 +44,7 @@ Once enabled, the timer starts automatically when Krita launches. The docker sho
 |---|---|
 | **Pause / Resume** | Freezes both timers. Click again to resume. |
 | **Reset** | Resets both timers and cancels any active overlay or toast. |
+| **Rest** | Start break immediately. |
 | **Config** | Opens the configuration dialog. |
 
 ### States
