@@ -5,6 +5,7 @@ from .compat import (
     QSize,
     QTimer,
     QWidget,
+    QApplication,
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
@@ -112,6 +113,7 @@ class RestNoteDockerWidget(QDockWidget):
         self._icon_resume = QIcon(os.path.join(_ICONS_DIR, "play.png"))
         self._icon_refresh = QIcon(os.path.join(_ICONS_DIR, "refresh.png"))
         self._icon_setting = QIcon(os.path.join(_ICONS_DIR, "setting.png"))
+        self._icon_rest = QIcon(os.path.join(_ICONS_DIR, "rest.png"))
 
         _btn_style = "background-color: rgb(70, 70, 70);"
 
@@ -127,6 +129,12 @@ class RestNoteDockerWidget(QDockWidget):
         self.reset_btn.setToolTip("Reset")
         self.reset_btn.clicked.connect(self._on_reset_clicked)
 
+        self.rest_btn = QPushButton()
+        self.rest_btn.setIcon(self._icon_rest)
+        self.rest_btn.setStyleSheet(_btn_style)
+        self.rest_btn.setToolTip("Take a break now")
+        self.rest_btn.clicked.connect(self._on_rest_clicked)
+
         self.config_btn = QPushButton()
         self.config_btn.setIcon(self._icon_setting)
         self.config_btn.setStyleSheet(_btn_style)
@@ -137,6 +145,7 @@ class RestNoteDockerWidget(QDockWidget):
         btn_row.addStretch()
         btn_row.addWidget(self.pause_btn)
         btn_row.addWidget(self.reset_btn)
+        btn_row.addWidget(self.rest_btn)
         btn_row.addWidget(self.config_btn)
         btn_row.addStretch()
         layout.addLayout(btn_row)
@@ -182,7 +191,7 @@ class RestNoteDockerWidget(QDockWidget):
         btn_px = int(time_pt * self.BTN_RATIO)
         btn_px = max(self.BTN_MIN_PX, min(self.BTN_MAX_PX, btn_px))
         btn_sz = QSize(btn_px, btn_px)
-        for btn in (self.pause_btn, self.reset_btn, self.config_btn):
+        for btn in (self.pause_btn, self.reset_btn, self.rest_btn, self.config_btn):
             btn.setFixedSize(btn_sz)
             btn.setIconSize(btn_sz)
 
@@ -253,6 +262,18 @@ class RestNoteDockerWidget(QDockWidget):
         # PAUSED, BREAK, MICRO_BREAK: idle detection is intentionally
         # skipped to avoid interfering with explicit user/system states.
 
+    def _current_screen(self):
+        """Resolve the screen the Krita main window is currently on."""
+        win = self.window()
+        if win is not None:
+            handle = win.windowHandle()
+            if handle is not None and handle.screen() is not None:
+                return handle.screen()
+            screen = win.screen()
+            if screen is not None:
+                return screen
+        return QApplication.primaryScreen()
+
     # ── Micro break logic ──
     def _maybe_trigger_micro_break(self):
         """20分タイマーが0になった時に呼ばれる。大休憩が近ければスキップ。"""
@@ -269,6 +290,7 @@ class RestNoteDockerWidget(QDockWidget):
             height=self.config.micro_toast_height,
             title_font_size=self.config.micro_toast_title_font_size,
             message_font_size=self.config.micro_toast_message_font_size,
+            screen=self._current_screen(),
         )
         self.micro_toast.finished.connect(self._end_micro_break)
         self.micro_toast.show()
@@ -298,6 +320,7 @@ class RestNoteDockerWidget(QDockWidget):
             title_font_size=self.config.overlay_title_font_size,
             message_font_size=self.config.overlay_message_font_size,
             skip_font_size=self.config.overlay_skip_font_size,
+            screen=self._current_screen(),
         )
         self.overlay.breakFinished.connect(self._end_big_break)
         self.overlay.show()
@@ -380,6 +403,11 @@ class RestNoteDockerWidget(QDockWidget):
             self.idle_detector.reset()
         self._refresh_display()
 
+    def _on_rest_clicked(self):
+        if self.state != self.STATE_BREAK:
+            self._start_big_break()
+            self._refresh_display()
+
     def _on_config_clicked(self):
         dialog = ConfigDialog(self.config, parent=self.widget())
         if dialog.exec():
@@ -398,6 +426,20 @@ class RestNoteDockerWidget(QDockWidget):
 
     def canvasChanged(self, canvas):
         pass
+
+    def closeEvent(self, event):
+        if self.tick_timer is not None:
+            self.tick_timer.stop()
+        if self.idle_detector is not None:
+            self.idle_detector.destroy()
+            self.idle_detector = None
+        if self.overlay is not None:
+            self.overlay.close()
+            self.overlay = None
+        if self.micro_toast is not None:
+            self.micro_toast.cancel()
+            self.micro_toast = None
+        super().closeEvent(event)
 
 
 class RestNoteDockerFactory(DockWidgetFactoryBase):

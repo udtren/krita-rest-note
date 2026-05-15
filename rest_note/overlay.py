@@ -11,15 +11,16 @@ class CalmBreakOverlay(QWidget):
     breakFinished = pyqtSignal()
 
     def __init__(self, break_seconds=600, title_font_size=50, message_font_size=32,
-                 skip_font_size=14):
+                 skip_font_size=14, screen=None):
         super().__init__()
         self.break_seconds = break_seconds
 
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        screen = QApplication.primaryScreen().geometry()
-        self.setGeometry(screen)
+        if screen is None:
+            screen = QApplication.primaryScreen()
+        self.setGeometry(screen.geometry())
 
         self._bg_alpha = 0
         self.target_alpha = 235
@@ -78,6 +79,7 @@ class CalmBreakOverlay(QWidget):
 
     def paintEvent(self, event):
         p = QPainter(self)
+        p.setCompositionMode(QPainter.CompositionMode_Source)
         p.fillRect(self.rect(), QColor(15, 17, 22, self._bg_alpha))
 
     def _on_resume(self):
